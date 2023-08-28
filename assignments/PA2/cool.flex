@@ -20,8 +20,7 @@
 #define MAX_STR_CONST 1025
 #define YY_NO_UNPUT   /* keep g++ happy */
 
- //extern 
- FILE *fin;/* we read from this file */
+ extern  FILE *fin;/* we read from this file */
 
 /* define YY_INPUT so we read from the FILE fin:
  * This change makes it possible to use this scanner in
@@ -64,11 +63,17 @@ DARROW          =>
   */
 {DARROW}		{ return (DARROW); }
 
+";"			{ printf("Ponto e virgula"); return ';'; }
+":"			{printf("Dois pontos"); return ':'; }
+"+"			{ printf("Somar"); return '+'; }
+
  /*
   * Keywords are case-insensitive except for the values true and false,
   * which must begin with a lower-case letter.
   */
-
+(?i:POOL)		{ return (POOL); }
+(?i:THEN)		{ return (THEN); }
+(?i:WHILE)		{ return (WHILE); }
 
  /*
   *  String constants (C syntax)
@@ -79,14 +84,4 @@ DARROW          =>
 
 
 %%
-int main (){
-  fin = fopen("test.cl", "r");
-  if (fin == NULL) {
-    perror("Erro ao abrir o arquivo");
-    exit(1);
-  }
-  
-  yylex();
-	return 0;
-}
 
