@@ -63,17 +63,50 @@ DARROW          =>
   */
 {DARROW}		{ return (DARROW); }
 
-";"			{ printf("Ponto e virgula"); return ';'; }
+
+
+"{"			{printf("Abre chave");return '{'; }
+"}"			{printf("fecha chave"); return '}'; }
+"("			{printf("Abre parenteses"); return '('; }
+")"			{printf("fecha parenteses"); return ')'; }
+"~"			{printf("til"); return '~'; }
+","			{printf("virgula"); return ','; }
+"-"			{printf("ifem"); return '-'; }
+"*"			{printf("mutiplicacao"); return '*'; }
+"/"			{printf("barra"); return '/'; }
+"%"			{printf("procentagem"); return '%'; }
+"."			{printf("ponto"); return '.'; }
+"<"			{printf("Menor"); return '<'; }
+">"			{printf("Mior"); return '<'; }
+"="			{printf("igual"); return '='; }
+"!"			{printf("esclamacao"); return '!'; }
+"@"			{printf("f"); return '@'; }
+"#"			{printf("c"); return '#'; }
+"$"			{printf("dinhero"); return '$'; }
+";"			{printf("Ponto e virgula"); return ';'; }
 ":"			{printf("Dois pontos"); return ':'; }
-"+"			{ printf("Somar"); return '+'; }
+"+"			{printf("Somar"); return '+'; }
+
+
 
  /*
   * Keywords are case-insensitive except for the values true and false,
   * which must begin with a lower-case letter.
   */
+
+
 (?i:POOL)		{ return (POOL); }
 (?i:THEN)		{ return (THEN); }
 (?i:WHILE)		{ return (WHILE); }
+(?i:CLASS)  {return(CLASS); }
+(?i:ELSE)  { return (ELSE); }
+(?i:FI)     { return (FI); }
+(?i:IF)     { return (IF); }
+(?i:LET)    { return (LET); }
+(?i:ISVOID) { return (ISVOID); }
+(?i:INHERITS)	{ return (INHERITS); }
+(?i:NOT)		{ return (NOT); }
+
 
  /*
   *  String constants (C syntax)
