@@ -2,7 +2,7 @@
 ASSN = 2
 CLASS= compiladores
 CLASSDIR= /var/tmp/cool
-LIB= 
+LIB= -L/usr/lib -lfl
 
 SRC= cool.flex test.cl README 
 CSRC= lextest.cc utilities.cc stringtab.cc handle_flags.cc
