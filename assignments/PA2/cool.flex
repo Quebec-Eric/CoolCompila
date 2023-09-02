@@ -2,6 +2,7 @@
  *  The scanner definition for COOL.
  */
 %option noyywrap
+//TESTE
 /*
  *  Stuff enclosed in %{ %} in the first section is copied verbatim to the
  *  output, so headers and global definitions are placed here to be visible
