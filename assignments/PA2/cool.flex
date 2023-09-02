@@ -66,7 +66,7 @@ DARROW          =>
 
 
 "{"			{return '{'; }
-"}"			{printf("fecha chave"); return '}'; }
+"}"			{ return '}'; }
 "("			{printf("Abre parenteses"); return '('; }
 ")"			{printf("fecha parenteses"); return ')'; }
 "~"			{printf("til"); return '~'; }
