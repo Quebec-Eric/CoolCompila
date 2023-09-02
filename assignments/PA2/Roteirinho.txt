@@ -1,0 +1,20 @@
+====================================================================
+    ROTEIRO PARA CRIAÇÃO DO LEXER
+====================================================================
+
+Declarações:
+    1. Palavras-Chaves (loop,pool,class,Int,String,if,fi,then). Obs.: Todas as palavras chaves são reservadas
+    2. Operadores (+,-,/,*,<-,=,&)
+    3. Identificadores (nome de variável e função)
+    4. Blocos ({ }, [ ], ( ))
+    5. Valores (4,"Bruno",false)
+    6. Fim de linha (;)
+    7. Definição de tipo (:)
+    8. Comentário ((* *), // \n)
+    9. Acesso de objeto (.)
+    10. Lista (,)
+
+Tratamento de Erro:
+
+
+Otimização:
