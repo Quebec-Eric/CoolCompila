@@ -14,6 +14,13 @@ include/PA2J
 include/PA3J
 include/PA4J
 include/PA5J
+assignments/PA2/cool-lex.o
+assignments/PA2/handle_flags.o
+assignments/PA2/lexer
+assignments/PA2/lextest.o
+assignments/PA2/stringtab.o
+assignments/PA2/utilities.o
+
 
 src/PA2J
 src/PA3J
