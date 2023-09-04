@@ -13,7 +13,10 @@ Declarações:
     8. Comentário ((* *), // \n)
     9. Acesso de objeto (.)
     10. Lista (,)
-
+    11. Treu / false
+    12.  TYPEID
+    13.ObjectID
+    
 Tratamento de Erro:
 
 
