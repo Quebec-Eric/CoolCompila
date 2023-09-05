@@ -4,6 +4,7 @@
 
 Declarações:
     1. Palavras-Chaves (loop,pool,class,Int,String,if,fi,then). Obs.: Todas as palavras chaves são reservadas
+        
     2. Operadores (+,-,/,*,<-,=,&)
     3. Identificadores (nome de variável e função)
     4. Blocos ({ }, [ ], ( ))
