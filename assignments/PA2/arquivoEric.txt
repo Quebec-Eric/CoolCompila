@@ -1,38 +1,58 @@
 
-
-
-
 /*
- Vericicar se  tem caracter nulo na string
+ Verificar string nula
 */
-
-<STRING>\"{ 
-
-            if(string_const_len>1 && str_contain_null_char){
-            strcpy(cool_yylval.error_msg, "tem caracter nulo");
-            BEGIN 0; return (ERROR);
-            }
+if (string_const_len > 1 && str_contain_null_char) {
+	strcpy(cool_yylval.error_msg, "String nula");
+	BEGIN 0; return (ERROR);
 }
 
+/*
+ Verificar se o comentario foi fechado
+*/
+"\*)" {
+	strcpy(cool_yylval.error_msg, "Comentario nao fechado");
+	return (ERROR);
+}
 
 /*
- Vericicar se a string e muito longa
+ Verificar se uma string estiver rodando ao fim do arquivo
 */
-<STRING>.		{ 
-        if(string_const_len>MAX_STR_CONST){
-        strcpy(cool_yylval.error_msg, "String muito longa");
-            BEGIN 0; return (ERROR);
-        }
-        string_const[string_const_len++] = yytext[0]; 
-}
 
 <STRING><<EOF>> {
-    strcpy(cool_yylval.error_msg, "EOF");
-    BEGIN 0; return (ERROR);
+	strcpy(cool_yylval.error_msg, "EOF in strin");
+	BEGIN 0; return (ERROR);
 }
 
 
+/*
+ Verificar se uma string e maior que o len esperado
+*/
 
+if (string_const_len >= MAX_STR_CONST) {
+	strcpy(cool_yylval.error_msg, "String muiro grande");
+	BEGIN 0; return (ERROR);
+}
+
+
+/*
+ Verificar se uma sting foi terminada corretamente
+*/
+
+<STRING>\n {
+	curr_lineno++;
+	strcpy(cool_yylval.error_msg, "String nao terminada");
+	BEGIN 0; return (ERROR);
+}
+
+
+/*
+ Alem dos erros e tokens se ele encontrar outra coisa ele vai retornar um erro
+*/
+. {
+	strcpy(cool_yylval.error_msg, yytext); 
+	return (ERROR); 
+}
 
 /*
  verificar se o valor inteiro e valido
