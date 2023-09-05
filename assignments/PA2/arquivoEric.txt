@@ -1,43 +1,16 @@
 
-/*
- Verificar string nula
-*/
-if (string_const_len > 1 && str_contain_null_char) {
-	strcpy(cool_yylval.error_msg, "String nula");
-	BEGIN 0; return (ERROR);
+{INT_CONST} {
+    if(is_invalid(yytext)) {
+        strcpy(cool_yylval.error_msg, "Valor invalido");
+        return (ERROR);
+    }
 }
-
-/*
- Verificar se o comentario foi fechado
-*/
-"\*)" {
-	strcpy(cool_yylval.error_msg, "Comentario nao fechado");
-	return (ERROR);
-}
-
-/*
- Verificar se uma string estiver rodando ao fim do arquivo
-*/
 
 <STRING><<EOF>> {
 	strcpy(cool_yylval.error_msg, "EOF in strin");
 	BEGIN 0; return (ERROR);
 }
 
-
-/*
- Verificar se uma string e maior que o len esperado
-*/
-
-if (string_const_len >= MAX_STR_CONST) {
-	strcpy(cool_yylval.error_msg, "String muiro grande");
-	BEGIN 0; return (ERROR);
-}
-
-
-/*
- Verificar se uma sting foi terminada corretamente
-*/
 
 <STRING>\n {
 	curr_lineno++;
@@ -46,41 +19,34 @@ if (string_const_len >= MAX_STR_CONST) {
 }
 
 
-/*
- Alem dos erros e tokens se ele encontrar outra coisa ele vai retornar um erro
-*/
-. {
-	strcpy(cool_yylval.error_msg, yytext); 
-	return (ERROR); 
+
+
+<BLOCK_COMMENT><<EOF>> { 
+    strcpy(cool_yylval.error_msg, "Comentário não fechado");
+    BEGIN(INITIAL); 
+    return (ERROR); 
 }
+<BLOCK_COMMENT>.  {}
 
-/*
- verificar se o valor inteiro e valido
-*/
 
-[0-9]+ {
-    if(is_invalid(yytext)) {
-        strcpy(cool_yylval.error_msg, "Valor invalido");
-        return (ERROR);
-    }
-}
+.                   { cool_yylval.error_msg = yytext;
+                      return (ERROR);
+                    }
 
 
 
-[A-Z][A-Za-z0-9]* {
-    cool_yylval.symbol = idtable.add_string(yytext); 
-    return (TYPEID);
-}
 
-[a-z][A-Za-z0-9]* {
-    cool_yylval.symbol = idtable.add_string(yytext); 
-    return (OBJECTID);
-}
+"(*"               { BEGIN(BLOCK_COMMENT); }
+<BLOCK_COMMENT>"*)"  { BEGIN(INITIAL); }  
 
-/*
- verificar se e um inteiro
-*/
-[0-9]+				{ 
-	cool_yylval.symbol = inttable.add_string(yytext); 
-	return (INT_CONST);
+%x BLOCK_COMMENT
+
+int str_counter = 0;
+int string_const_len;
+bool  str_contain_null_char;
+
+
+bool is_invalid(const char * yytext){
+  int val = atoi(yytext);
+  return(val<0);
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-flex_file="cool.FLEX"
+flex_file="cool.flex"
 
 
 temp_file="temp.l"

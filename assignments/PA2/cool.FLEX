@@ -1,3 +1,8 @@
+/*
+  * --------------------------------------------
+  * Arquivo bruno.txt :
+  * --------------------------------------------
+ */
 
 /*
 =================================== DEFINIÇÕES =====================================
@@ -41,8 +46,8 @@ OF                  (?i:of)
 ISVOID              (?i:isvoid)
 NOT                 (?i:not)
 
-MULTILINE_COMMENT   \(\*{ANYTHING}\*\)$
-SINGLELINE_COMMENT  "--"{ANYTHING}"--"$
+MULTILINE_COMMENT   \(\*{ANYTHING}\*\)
+SINGLELINE_COMMENT  "--"{ANYTHING}"--"
 
 
 /*
@@ -103,3 +108,81 @@ SINGLELINE_COMMENT  "--"{ANYTHING}"--"$
 .                   { cool_yylval.error_msg = yytext;
                       return (ERROR);
                     }
+
+/*
+  * --------------------------------------------
+  * Arquivo arquivoEric.txt :
+  * --------------------------------------------
+ */
+
+/*
+ Verificar string nula
+*/
+if (string_const_len > 1 && str_contain_null_char) {
+	strcpy(cool_yylval.error_msg, "String nula");
+	BEGIN 0; return (ERROR);
+}
+
+
+
+
+/*
+ Verificar se o comentario foi fechado
+*/
+"\*)" {
+	strcpy(cool_yylval.error_msg, "Comentario nao fechado");
+	return (ERROR);
+}
+
+
+
+/*
+ Verificar se uma string estiver rodando ao fim do arquivo
+*/
+
+<STRING><<EOF>> {
+	strcpy(cool_yylval.error_msg, "EOF in strin");
+	BEGIN 0; return (ERROR);
+}
+
+
+
+
+/*
+ Verificar se uma string e maior que o len esperado
+*/
+
+if (string_const_len >= MAX_STR_CONST) {
+	strcpy(cool_yylval.error_msg, "String muiro grande");
+	BEGIN 0; return (ERROR);
+}
+
+
+/*
+ Verificar se uma sting foi terminada corretamente
+*/
+
+<STRING>\n {
+	curr_lineno++;
+	strcpy(cool_yylval.error_msg, "String nao terminada");
+	BEGIN 0; return (ERROR);
+}
+
+
+
+/*
+ verificar se o valor inteiro e valido
+*/
+
+[0-9]+ {
+    if(is_invalid(yytext)) {
+        strcpy(cool_yylval.error_msg, "Valor invalido");
+        return (ERROR);
+    }
+}
+
+
+
+
+
+%%
