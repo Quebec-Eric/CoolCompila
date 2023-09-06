@@ -22,7 +22,7 @@
 
 
 <BLOCK_COMMENT><<EOF>> { 
-    strcpy(cool_yylval.error_msg, "Comentário não fechado");
+    strcpy(cool_yylval.error_msg, "Comentario não fechado");
     BEGIN(INITIAL); 
     return (ERROR); 
 }
