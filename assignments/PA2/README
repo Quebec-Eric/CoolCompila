@@ -122,7 +122,7 @@ Instructions
 
 Write-up for PA2
 ----------------
-
+Alunos :Bruno Pena Baeta, Diogo Fasciani, Eric Azevedo de Oliveira, July Ferreira
 O código do lexer presente no arquivo cool.flex foi separado da seguinte forma:
 
 Primeiramente foram feitas as  declarações, onde contém variáveis e função que foram úteis para o desenvolvimento do lexer.
