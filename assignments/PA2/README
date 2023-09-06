@@ -123,3 +123,13 @@ Instructions
 Write-up for PA2
 ----------------
 
+O código do lexer presente no arquivo cool.flex foi separado da seguinte forma:
+
+Primeiramente foram feitas as  declarações, onde contém variáveis e função que foram úteis para o desenvolvimento do lexer.
+
+Em segundo lugar foram escritas as definições, parte onde foram definidas expressões regulares para alguns tokens, facilitando o processo de escrita de regras.
+
+Depois, foram escritas as regras do lexer. As primeiras regras escritas foram a respeito dos comentários, já que, qualquer coisa escrita dentro de comentários deve ser ignorada. Em seguida, foram escritas as regras referente às palavras-chaves, que também são palavras reservadas em COOL. Ao final das regras, foram escritas as regras das strings, ints, bools, objetos e operadores.
+
+Por último, foi feito o tratamento de erros. O tratamento de erros foi muito focado em strings, impedindo que strings não sejam fechadas e limitando o tamanho máximo delas. O último tratamento de erro é uma regra que, caso alguma sentença não combine com nenhuma das regras, ela irá combinar com essa última regra e devolverá erro.
+Os testes foram feitos com diversos arquivos, tendo várias alterações no test.cl e usado o arquivo stack.cl do PA1. Em todos os testes feitos o lexer teve êxito.
