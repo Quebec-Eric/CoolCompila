@@ -122,14 +122,114 @@ Instructions
 
 Write-up for PA2
 ----------------
-Alunos :Bruno Pena Baeta, Diogo Fasciani, Eric Azevedo de Oliveira, July Ferreira
-O código do lexer presente no arquivo cool.flex foi separado da seguinte forma:
+#Alunos :Bruno Pena Baeta, Diogo Fasciani, Eric Azevedo de Oliveira, July Ferreira
 
-Primeiramente foram feitas as  declarações, onde contém variáveis e função que foram úteis para o desenvolvimento do lexer.
+##O código do lexer presente no arquivo cool.flex foi separado da seguinte forma:
 
-Em segundo lugar foram escritas as definições, parte onde foram definidas expressões regulares para alguns tokens, facilitando o processo de escrita de regras.
 
-Depois, foram escritas as regras do lexer. As primeiras regras escritas foram a respeito dos comentários, já que, qualquer coisa escrita dentro de comentários deve ser ignorada. Em seguida, foram escritas as regras referente às palavras-chaves, que também são palavras reservadas em COOL. Ao final das regras, foram escritas as regras das strings, ints, bools, objetos e operadores.
+**Primeiramente foram feitas as  declarações, onde contém variáveis e função que foram úteis para o desenvolvimento do lexer.**
 
-Por último, foi feito o tratamento de erros. O tratamento de erros foi muito focado em strings, impedindo que strings não sejam fechadas e limitando o tamanho máximo delas. O último tratamento de erro é uma regra que, caso alguma sentença não combine com nenhuma das regras, ela irá combinar com essa última regra e devolverá erro.
+```c++
+ANYTHING            (.|"\n")*
+LETTER              [a-zA-Z]+
+INT_CONST           [0-9]+
+BOOL_CONST          ((t)(?i:rue)|(f)(?i:alse))
+STR_CONST            \"{ANYTHING}\"
+OPERATOR            ("+"|"-"|"*"|"/")
+COMPARISON_OP       ("<"|"=")
+SPECIAL_CHAR        ({COMPARISON_OP}|"("|")"|"{"|"}"|";"|":"|"."|","|"~"|"@")
+WHITE_SPACE         (" "|\f|\r|\t|\v)
+TYPEID              ("SELF_TYPE"|[A-Z]({LETTER}|{INT_CONST}|"_")*)
+OBJECTID            ("self"|{LETTER}({LETTER}|{INT_CONST}|"_")*)
+DARROW              "=>"
+LE                  "<="
+ASSIGN              "<-"
+```
+
+**Em segundo lugar foram escritas as definições, parte onde foram definidas expressões regulares para alguns tokens, facilitando o processo de escrita de regras.**
+
+```c++
+CLASS               (?i:class)
+INHERITS            (?i:inherits)
+NEW                 (?i:new)
+ELSE                (?i:else)
+FI                  (?i:fi)
+IF                  (?i:if)
+IN                  (?i:in)
+LET                 (?i:let)
+THEN                (?i:then)
+WHILE               (?i:while)
+LOOP                (?i:loop)
+POOL                (?i:pool)
+
+```
+
+
+
+**Depois, foram escritas as regras do lexer. As primeiras regras escritas foram a respeito dos comentários, já que, qualquer coisa escrita dentro de comentários deve ser ignorada. Em seguida, foram escritas as regras referente às palavras-chaves, que também são palavras reservadas em COOL. Ao final das regras, foram escritas as regras das strings, ints, bools, objetos e operadores.**
+
+```c++
+\n      {curr_lineno++;}
+
+"(*"               { BEGIN(BLOCK_COMMENT); }
+<BLOCK_COMMENT>"*)"  { BEGIN(INITIAL); }  
+
+
+{CLASS}             return (CLASS);
+{INHERITS}          return (INHERITS);  
+{NEW}               return (NEW);
+{ELSE}              return (ELSE);
+{FI}                return (FI);
+{IF}                return (IF);
+{NOT}               return (NOT);
+
+```
+
+
+
+**Por último, foi feito o tratamento de erros. O tratamento de erros foi muito focado em strings, impedindo que strings não sejam fechadas e limitando o tamanho máximo delas. O último tratamento de erro é uma regra que, caso alguma sentença não combine com nenhuma das regras, ela irá combinar com essa última regra e devolverá erro.**
+
+
+```c++
+<STRING>.		{ 
+	if (string_const_len >= MAX_STR_CONST) {
+		strcpy(cool_yylval.error_msg, "String constant too long");
+		BEGIN 0; return (ERROR);
+	} 
+	string_const[string_const_len++] = yytext[0]; 
+}
+
+
+<BLOCK_COMMENT><<EOF>> { 
+    strcpy(cool_yylval.error_msg, "Comentario não fechado");
+    BEGIN(INITIAL); 
+    return (ERROR); 
+}
+
+.                   { cool_yylval.error_msg = yytext;
+                      return (ERROR);
+                    }
+```
+
 Os testes foram feitos com diversos arquivos, tendo várias alterações no test.cl e usado o arquivo stack.cl do PA1. Em todos os testes feitos o lexer teve êxito.
+
+
+```c++
+cells <- (new CellularAutomaton).init("         X         ");
+```
+**STR_CONST "         X         "**
+
+```c++
+cells <- (new CellularAutomaton).init("         X         );
+```
+**ERROR "String Not finished"**
+
+```c++
+(* end let countdown*)
+```
+**#89 ')'#89 ';' #90 OBJECTID self #90 ';' #91 '}' #93 '}' #93 ';' #94 '}' #94 '; '**
+
+```c++
+(* end let countdown
+```
+**#89 ERROR "Comentario nao fechado"**
