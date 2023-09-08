@@ -1384,7 +1384,7 @@ YY_RULE_SETUP
 case YY_STATE_EOF(BLOCK_COMMENT):
 #line 206 "cool.flex"
 { 
-    strcpy(cool_yylval.error_msg, "Comentario não fechado");
+    strcpy(cool_yylval.error_msg, "Comentario nao fechado");
     BEGIN(INITIAL); 
     return (ERROR); 
 }

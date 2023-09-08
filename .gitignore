@@ -3,17 +3,10 @@ assignments/PA2J
 assignments/PA3J
 assignments/PA4J
 assignments/PA5J
-assignments/PA1/Makefile
-assignments/PA2/Makefile
-assignments/PA3/Makefile
-assignments/PA4/Makefile
-assignments/PA5/Makefile
 include/PA2J
 include/PA3J
 include/PA4J
 include/PA5J
-
-
 src/PA2J
 src/PA3J
 src/PA4J

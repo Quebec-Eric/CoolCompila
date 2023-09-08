@@ -204,7 +204,7 @@ NOT                 (?i:not)
 
 
 <BLOCK_COMMENT><<EOF>> { 
-    strcpy(cool_yylval.error_msg, "Comentario não fechado");
+    strcpy(cool_yylval.error_msg, "Comentario nao fechado");
     BEGIN(INITIAL); 
     return (ERROR); 
 }
