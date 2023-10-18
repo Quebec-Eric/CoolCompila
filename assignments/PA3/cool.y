@@ -79,6 +79,7 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 %type <class_> class
 
 /* You will want to change the following line. */
+
 %type <features> dummy_feature_list
 %type <feature> feature
 %type <formal> formal
@@ -89,6 +90,7 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 %type <expressions> expression_list
 %type <expression> let
 %type <expression> optional_assign
+%type <error_msg> error_msg
 
 /* Precedence declarations go here. */
 %left '+' '-'
@@ -109,16 +111,19 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 /* 
    Save the root of the abstract syntax tree in a global variable.
 */
+
+//Inicio da ASA
 program	              : class_list	{ 
-                                        ast_root = program($1);
+                                        ast_root = program($1); // aki salva na arqvore
                                     }
-                                    | error ';' {yyerrok;}
+                                    | error_msg {}
                                     ;
 
 expression : OBJECTID ASSIGN expression { 
                 $$ = make_assign($1, $3); 
             }
 
+// Lista de classes
 class_list           	: class	/* single class */
                                     { 
                                         $$ = single_Classes($1);
@@ -129,13 +134,14 @@ class_list           	: class	/* single class */
                                       $$ = append_Classes($1,single_Classes($2)); 
                                       parse_results = $$;
                                     }
-                                    | error ';' {yyerrok;}
+                                    | error_msg {}
 	                                  ;
 
 
 
 /* If no parent is specified, the class inherits from the Object class. */
 
+// Definicao de classe
 class	                : CLASS TYPEID '{' dummy_feature_list '}' ';'
 		                                        {
                                                   $$ = class_($2,idtable.add_string("Object"),$4,
@@ -145,13 +151,14 @@ class	                : CLASS TYPEID '{' dummy_feature_list '}' ';'
 		                                        { 
                                               $$ = class_($2,$4,$6,stringtable.add_string(curr_filename));
                                             }
-                                            | error ';' {yyerrok;}
+                                            | error_msg {}
 	                                          ;
 
 
 
 /* Feature list may be empty, but no empty features in list. */
 
+// listica das features
 dummy_feature_list                    :/* empty */
                                       { 
                                           $$ = nil_Features();
@@ -162,16 +169,19 @@ dummy_feature_list                    :/* empty */
 			                                  }
 			                                	;
 
-                                    
+
+// features das classes e metodos       
 feature		                            : OBJECTID '(' formal_list ')' ':' TYPEID '{' expression '}' ';' {
                                         $$ = method($1, $3, $6, $8);
                                       }
                                       | OBJECTID ':' TYPEID optional_assign ';' {
                                         $$ = attr($1, $3, $4);
                                       }
-                                      | error ';' {yyerrok;}
+                                      |error_msg {}
                                       ;
 
+
+// lista de argumentos
 formal_list                           : {
 					                                $$ = nil_Formals();
 			                                	}
@@ -181,14 +191,17 @@ formal_list                           : {
 			                                 	| formal_list ',' formal {
 				                                	$$ = append_Formals($1, single_Formals($3));
 				                                }
-                                         | error ';' {yyerrok;}
+                                         | error_msg {}
 			                                	;
 
+//argumentos
 formal		                            : OBJECTID ':' TYPEID 
                                         {
 					                                $$ = formal($1, $3);
 				                                }
 			                                	;
+
+
 
 expression_list                       : expression 
                                        { 
@@ -198,10 +211,25 @@ expression_list                       : expression
                                        { 
                                          $$ = append_Expressions($1, single_Expressions($3)); 
                                        }
-                                       | error ';' { yyerrok; }
+                                       | error_msg {}
                                       ;
 
 
+// falar o problema e error com base na derivacao da entrada
+error_msg                             : ';' 
+                                        {
+                                          fprintf(stderr, "Erro presente naa linha %d: Devido caracter  [';'].\n", yylineno);
+                                          $$ = strdup("';' Erro");
+                                        }
+                                      | ',' 
+                                          {
+                                            fprintf(stderr, "Erro na linha %d:  Devido caracter [','].\n", yylineno);
+                                            $$ = strdup("',' Erro");
+                                          }
+                                      ;
+
+
+//trabtando co comendo let
 let	                                  : OBJECTID ':' TYPEID optional_assign IN expression
                                           {           
                                            $$ = let_expr($2, $4, $5, $7);
@@ -210,8 +238,9 @@ let	                                  : OBJECTID ':' TYPEID optional_assign IN e
                                           {
 			                                       $$ = let_multiple($1, $3, $4, $6);
 		                                      }
-                                        | error ',' let { yyerrok; }
+                                        | error_msg {}
                                         ;
+
 
 case		                              : OBJECTID ':' TYPEID DARROW expression ';'
                                         {
