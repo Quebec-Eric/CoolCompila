@@ -1,0 +1,13 @@
+#name "good.cl"
+#1 CLASS
+#1 TYPEID A
+#1 '{'
+#2 '}'
+#2 ';'
+#4 CLASS
+#4 TYPEID BB__
+#4 INHERITS
+#4 TYPEID A
+#4 '{'
+#5 '}'
+#5 ';'

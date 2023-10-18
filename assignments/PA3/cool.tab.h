@@ -79,7 +79,8 @@ extern int cool_yydebug;
     ASSIGN = 280,                  /* ASSIGN  */
     NOT = 281,                     /* NOT  */
     LE = 282,                      /* LE  */
-    ERROR = 283                    /* ERROR  */
+    ERROR = 283,                   /* ERROR  */
+    FLAG = 285                     /* FLAG  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -114,12 +115,13 @@ extern int cool_yydebug;
 #define NOT 281
 #define LE 282
 #define ERROR 283
+#define FLAG 285
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 33 "cool.y"
+#line 34 "cool.y"
 
   Boolean boolean;
   Symbol symbol;
@@ -136,7 +138,7 @@ union YYSTYPE
   Expressions expressions;
   char *error_msg;
 
-#line 140 "cool.tab.h"
+#line 142 "cool.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -144,9 +146,23 @@ typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
 
 extern YYSTYPE cool_yylval;
-
+extern YYLTYPE cool_yylloc;
 
 int cool_yyparse (void);
 
