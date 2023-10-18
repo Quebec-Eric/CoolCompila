@@ -722,7 +722,7 @@ char *string_buf_ptr;
 
 extern int verbose_flag;
 //changed
-int curr_lineno;
+extern int curr_lineno;
 extern char* curr_filename;
 
 static int prevstate;
