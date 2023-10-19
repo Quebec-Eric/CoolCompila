@@ -81,17 +81,16 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 
 /* You will want to change the following line. */
 
-%type <features> dummy_feature_list
-%type <feature> feature
-%type <formals> parameter_list
-%type <formal> formal
-%type <cases> case_list
-%type <case_> case
-%type <expressions> expression_list1
-%type <expressions> expression_list2
-%type <expression> expression
-%type <expression> let
-%type <expression> optional_assign
+%type <features> dummy_feature_list  //lista ficticia de caracteristicas
+%type <feature> feature // representacao de uma unica caracteristica
+%type <formals> parameter_list // lista de caracteristica
+%type <formal> formal // representao um unico paramentro
+%type <cases> case_list //uma listade  branch
+%type <case_> case // uma unica branch
+%type <expressions> expression_list1 //espressao separadas por virgula
+%type <expressions> expression_list2 //expressao separada por ponto e virgula
+%type <expression> expression //expressao
+%type <expression> let //declaracao
 %type <error_msg> error_token
 
 
@@ -319,16 +318,6 @@ case		                              : OBJECTID ':' TYPEID DARROW expression ';'
 
 
 
-                                        
-optional_assign                       : 
-                                        {
-                                          $$ = NULL;
-                                        }
-                                        | ASSIGN expression
-                                          {
-                                           $$ = $2;
-                                          }
-                                          ;
 
 
 /* end of grammar */
