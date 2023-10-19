@@ -96,7 +96,7 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 
 
 /* Precedence declarations go here. */
-%nonassoc '<' '=' LE
+%nonassoc '<' '=' '>' LE 
 %left '+' '-' 
 %left '*' '/'  
 %right '~'  
@@ -107,7 +107,48 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 %right NOT
 %left ISVOID
 
+/*
+    Oq colocar no expression
 
+    OBJECTID ASSIGN expression
+
+    expression '.' OBJECTID '('   expression_list1  ')'  
+
+    OBJECTID '(' expression_list1  ')'  ==vai ter que tem um self
+
+    IF expression THEN expression ELSE expression FI == cund cond 
+        
+    WHILE expression LOOP expression POOL  == loop
+
+    LET let 
+
+    CASE expression OF case_list ESAC
+
+    '{' expression_list2 '}' 
+
+
+    NEW TYPEID
+
+    ISVOID  expression
+
+    expression " linha das operacoes'  expression
+
+    '~' '!'   expression
+    NOT expression
+
+      '(' expression ')'  
+
+    OBJECTID
+
+    INT_CONST
+
+    BOOL_CONST
+
+    STR_CONST   
+
+
+
+   */
 
 %%
 /* 
@@ -140,6 +181,8 @@ class_list           	: class	/* single class */
 
 
 
+
+          
 /* If no parent is specified, the class inherits from the Object class. */
 
 // Definicao de classe
@@ -206,26 +249,27 @@ formal		                            : OBJECTID ':' TYPEID
 			                                	;
 
 
-expression_list1 : { /* empty */
-					$$ = nil_Expressions();
-				}
-				| expression { /* single expression */
-					$$ = single_Expressions($1);
-				} 
-				| expression_list1 ',' expression { /* several expressions */
-					$$ = append_Expressions($1, single_Expressions($3));
-				}
-				;
+      expression_list1 : { /* empty */
+                $$ = nil_Expressions();
+              }
+              | expression { /* single expression */
+                $$ = single_Expressions($1);
+              } 
+              | expression_list1 ',' expression { /* several expressions */
+                $$ = append_Expressions($1, single_Expressions($3));
+              }
+              ;
 
 
-	expression_list2 : expression ';' { /* single expression */
-					$$ = single_Expressions($1);
-				} 
-				| expression_list2 expression ';' { /* several expressions */
-					$$ = append_Expressions($1, single_Expressions($2));
-				}
-				| error ';' { yyerrok; }
-				;
+        expression_list2 : expression ';' { /* single expression */
+                $$ = single_Expressions($1);
+              } 
+              | expression_list2 expression ';' { /* several expressions */
+                $$ = append_Expressions($1, single_Expressions($2));
+              }
+              | error ';' { yyerrok; }
+              ;
+
 
 // falar o problema e error com base na derivacao da entrada
 error_msg                             : ';' 
@@ -241,7 +285,7 @@ error_msg                             : ';'
 
 
 
-//trabtando co comendo let
+//tratando o let
 let	                                  : OBJECTID ':' TYPEID optional_assign IN expression
                                           {           
                                             $$ = let($1, $3, $4, $6);
