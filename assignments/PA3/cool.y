@@ -91,6 +91,7 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 %type <expressions> expression_list2 //expressao separada por ponto e virgula
 %type <expression> expression //expressao
 %type <expression> let //declaracao
+%type <expression> optional_assign //declaracao
 %type <error_msg> error_token
 
 
@@ -247,6 +248,18 @@ formal		                            : OBJECTID ':' TYPEID
 				                                }
 			                                	;
 
+// Assign opcional
+optional_assign		                    : 
+                                        {
+					                                $$ = no_expr();
+				                                }
+                                        | ASSIGN expression
+                                        {
+                                          $$ = $2;
+                                        }                                        
+			                                	;
+
+
     // a unica difirenca entre essas duas expressoes estao relacionadas ao mode que sao separaras uma e separada por virgula e outra por ponto virgula, basicamente issom 
 expression_list1                        :{ 
                                           $$ = nil_Expressions();
@@ -315,8 +328,119 @@ case		                              : OBJECTID ':' TYPEID DARROW expression ';'
 					                                $$ = branch($1, $3, $5);
 				                                }
                                         ;
-
-
+/*
+Assignment
+Despacho
+Despacho
+IF
+While
+Bloco de codicpo
+Let
+Case
+New type
+Isvoid
++ - * / ~ < LE = NOT
+(expressao)
+variavel
+constante
+*/
+expression                            : OBJECTID ASSIGN expression 
+                                        {
+					                                $$ = assign($1, $3);
+				                                }
+                                        | expression '.' OBJECTID '(' expression_list1 ')'
+                                          {
+				                                    $$ = dispatch($1, $3, $5);
+				                                  }
+                                        | OBJECTID '(' expression_list1 ')'
+                                          {
+				                                    $$ = dispatch(object(stringtable.add_string("self")), $1, $3);
+				                                  }
+                                        | IF expression THEN expression ELSE expression FI
+                                          {
+                                            $$ = cond($2, $4, $6);
+                                          }
+                                        | WHILE expression LOOP expression POOL
+                                          { 
+                                            $$ = loop($2, $4);
+                                          }
+                                        | '{' expression_list2 '}'
+                                          { 
+                                            $$ = block($2); 
+                                          }
+                                        | LET let
+                                          { 
+                                            $$ = $2; 
+                                          }
+                                        | CASE expression OF case_list ESAC
+                                          { 
+                                            $$ = typcase($2, $4); 
+                                          }
+                                        | NEW TYPEID
+                                          { 
+                                            $$ = new_($2); 
+                                          }
+                                        | ISVOID expression
+                                          { 
+                                            $$ = isvoid($2); 
+                                          }
+                                        | expression '+' expression
+                                          { 
+                                            $$ = plus($1, $3); 
+                                          }
+                                        | expression '-' expression
+                                          { 
+                                            $$ = sub($1, $3); 
+                                          }
+                                        | expression '*' expression
+                                          { 
+                                            $$ = mul($1, $3); 
+                                          }
+                                        | expression '/' expression
+                                          { 
+                                            $$ = divide($1, $3); 
+                                          }
+                                        | '~' expression
+                                          { 
+                                            $$ = neg($2); 
+                                          }
+                                        | expression '<' expression
+                                          { 
+                                            $$ = lt($1, $3); 
+                                          }
+                                        | expression LE expression
+                                          { 
+                                            $$ = leq($1, $3); 
+                                          }
+                                        | expression '=' expression
+                                          { 
+                                            $$ = eq($1, $3); 
+                                          }
+                                        | NOT expression
+                                          { 
+                                            $$ = comp($2); 
+                                          }
+                                        | '(' expression ')'
+                                          { 
+                                            $$ = $2; 
+                                          }
+                                        | OBJECTID
+                                          { 
+                                            $$ = object($1); 
+                                          }
+                                        | INT_CONST
+                                          { 
+                                            $$ = int_const($1); 
+                                          }
+                                        | STR_CONST
+                                          { 
+                                            $$ = string_const($1); 
+                                          } 
+                                        | BOOL_CONST
+                                          { 
+                                            $$ = bool_const($1); 
+                                          } 
+                                        ;
 
 
 
