@@ -83,7 +83,7 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 
 %type <features> dummy_feature_list
 %type <feature> feature
-%type <formals> formal_list
+%type <formals> parameter_list
 %type <formal> formal
 %type <cases> case_list
 %type <case_> case
@@ -92,7 +92,7 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 %type <expression> expression
 %type <expression> let
 %type <expression> optional_assign
-%type <error_msg> error_msg
+%type <error_msg> error_token
 
 
 /* Precedence declarations go here. */
@@ -176,7 +176,7 @@ class_list           	: class	/* single class */
                                       $$ = append_Classes($1,single_Classes($2)); 
                                       parse_results = $$;
                                     }
-                                    | error_msg {}
+                                    | error_token{}
 	                                  ;
 
 
@@ -195,7 +195,7 @@ class	                : CLASS TYPEID '{' dummy_feature_list '}' ';'
 		                                        { 
                                               $$ = class_($2,$4,$6,stringtable.add_string(curr_filename));
                                             }
-                                            | error_msg {}
+                                            | error_token{}
 	                                          ;
 
 
@@ -216,27 +216,27 @@ dummy_feature_list                    :/* empty */
 
 
 // lista de argumentos
-formal_list                           : {
+parameter_list                          : {
 					                                $$ = nil_Formals();
 			                                	}
 			                                	| formal {
 				                                	$$ = single_Formals($1);
 				                                }
-			                                 	| formal_list ',' formal {
+			                                 	| parameter_list ',' formal {
 				                                	$$ = append_Formals($1, single_Formals($3));
 				                                }
-                                         | error_msg {}
+                                         | error_token{}
 			                                	;
 
 
 // features das classes e metodos       
-feature		                            : OBJECTID '(' formal_list ')' ':' TYPEID '{' expression '}' ';' {
+feature		                            : OBJECTID '('parameter_list')' ':' TYPEID '{' expression '}' ';' {
                                         $$ = method($1, $3, $6, $8);
                                       }
                                       | OBJECTID ':' TYPEID optional_assign ';' {
                                         $$ = attr($1, $3, $4);
                                       }
-                                      |error_msg {}
+                                      |error_token {}
                                       ;
 
 
@@ -248,31 +248,33 @@ formal		                            : OBJECTID ':' TYPEID
 				                                }
 			                                	;
 
+    // a unica difirenca entre essas duas expressoes estao relacionadas ao mode que sao separaras uma e separada por virgula e outra por ponto virgula, basicamente issom 
+expression_list1                        :{ 
+                                          $$ = nil_Expressions();
+                                         }
+                                        | expression { 
+                                             $$ = single_Expressions($1);
+                                          } 
+                                        | expression_list1 ',' expression { 
+                                          $$ = append_Expressions($1, single_Expressions($3));
+                                          }
+                                        | error_token {}
+                                         ;
 
-      expression_list1 : { /* empty */
-                $$ = nil_Expressions();
-              }
-              | expression { /* single expression */
-                $$ = single_Expressions($1);
-              } 
-              | expression_list1 ',' expression { /* several expressions */
-                $$ = append_Expressions($1, single_Expressions($3));
-              }
-              ;
 
-
-        expression_list2 : expression ';' { /* single expression */
-                $$ = single_Expressions($1);
-              } 
-              | expression_list2 expression ';' { /* several expressions */
-                $$ = append_Expressions($1, single_Expressions($2));
-              }
-              | error ';' { yyerrok; }
-              ;
+expression_list2                        : expression ';' 
+                                        {
+                                          $$ = single_Expressions($1);
+                                        } 
+                                        | expression_list2 expression ';' { 
+                                          $$ = append_Expressions($1, single_Expressions($2));
+                                        }
+                                        | error_token {}
+                                        ;
 
 
 // falar o problema e error com base na derivacao da entrada
-error_msg                             : ';' 
+error_token                            : ';' 
                                         {
                                          $$ = strdup("';' Erro");
                                         }
@@ -295,7 +297,7 @@ let	                                  : OBJECTID ':' TYPEID optional_assign IN e
                                           {
 			                                       $$ = let($1, $3, $4, $6);
 		                                      }
-                                        | error_msg {}
+                                        | error_token{}
                                         ;
 
 case_list	                             :  case
