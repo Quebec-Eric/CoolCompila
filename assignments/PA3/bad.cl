@@ -1,46 +1,94 @@
-
-(*
- *  execute "coolc bad.cl" to see the error messages that the coolc parser
- *  generates
- *
- *  execute "myparser bad.cl" to see the error messages that your parser
- *  generates
- *)
-
-(* no error *)
-class A {
+class CellularAutomaton inherits IO {
+    population_map : String;
+    
+    init(map : String) : SELF_TYPE {
+        {
+            population_map <- map;
+            self;
+        }
+    };
+   
+    print() : SELF_TYPE {
+        {
+            out_string(population_map.concat("class"));
+            self;
+        }
+    };
+   
+    num_cells() : Int {
+        population_map.length()
+    };
+   
+    cell(position : Int) : String {
+        population_map.substr(position, 1)
+    };
+   
+    cell_left_neighbor(position : Int) : String {
+        if position = 0 then
+            cell(num_cells() - 1)
+        else
+            cell(position - 1)
+        fi
+    };
+   
+    cell_right_neighbor(position : Int) : String {
+        if position = num_cells() - 1 then
+            cell(0)
+        else
+            cell(position + 1)
+        fi
+    };
+   
+    (* a cell will live if exactly 1 of itself and it's immediate
+       neighbors are alive *)
+    cell_at_next_evolution(position : Int) : String {
+        if (if cell(position) = "X" then 1 else 0 fi
+            + if cell_left_neighbor(position) = "X" then 1 else 0 fi
+            + if cell_right_neighbor(position) = "X" then 1 else 0 fi
+            = 1)
+        then
+            "X"
+        else
+            "."
+        fi
+    };
+   
+    evolve() : SELF_TYPE {
+        (let position : Int in
+        (*(let num : Int <- num_cells[] in*)
+        (let temp : String in
+            {
+                while position < num loop
+                    {
+                        temp <- temp.concat(cell_at_next_evolution(position));
+                        position <- position + 1;
+                    }
+                pool;
+                population_map <- temp;
+                self;
+            }
+        ) ) (*)*)
+    };
 };
 
-Class A inherits B {
-	a : Int <- 0;
-	test() : Int {
-		let i : int <- 1, j : string in i
-	};
-	test2() : int { 1 };
-	test3() : Int {
-		{
-			a = Double + a;
-			C = a + 5;
-			a * 2;
-			Int;
-		}
-	};
-	test4( : Int;
+class Main {
+    cells : CellularAutomaton;
+   
+    main() : SELF_TYPE {
+        {
+            cells <- (new CellularAutomaton).init("         X         ");
+            cells.print();
+            (let countdown : Int <- 20 in
+                while not countdown<=0 loop
+                    {
+                        cells.evolve();
+                        cells.print();
+                        countdown <- countdown - 1;
+                    }
+                pool
+            );  (* end let countdown*)
+            self;
+        }
+        
+    };
 };
-
-(* error:  b is not a type identifier *)
-Class b inherits A {
-};
-
-(* error:  a is not a type identifier *)
-Class C inherits a {
-};
-
-(* error:  keyword inherits is misspelled *)
-Class D inherts A {
-};
-
-(* error:  closing brace is missing *)
-Class E inherits A {
-;
-

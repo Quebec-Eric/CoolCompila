@@ -242,7 +242,7 @@ error_token                            : ';'
                                           }
                                       ;
 
-// expressions que faltavam (deve ta faltando alguma coisa, são muitas)
+// expressions
 expression                          	: OBJECTID ASSIGN expression {
                                             $$ = assign($1, $3);
                                         }

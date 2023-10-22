@@ -140,5 +140,120 @@ Instructions
 
 ---8<------8<------8<------8<---cut here---8<------8<------8<------8<---
 
-Write-up for PA3
+## Write-up for PA3
 ----------------
+
+## Alunos :Bruno Pena Baeta, Diogo Fasciani, Eric Azevedo de Oliveira, July Ferreira
+
+## O código do parser presente no arquivo cool.y foi separado da seguinte forma:
+##Classes
+program: Representa a AST. Todas as classes definidas no código fonte serão filhas deste nó.
+
+class_list: Representa uma lista de classes presentes no código fonte.
+
+## Union - Todos os tipos possíveis de nós que podem estar presentes na AST
+
+  Boolean boolean;
+  Symbol symbol;
+  Program program;
+  Class_ class_;
+  Classes classes;
+  Feature feature;
+  Features features;
+  Formal formal;
+  Formals formals;
+  Case case_;
+  Cases cases;
+  Expression expression;
+  Expressions expressions;
+  char *error_msg;
+
+## Token Esta seção define os tokens que serão gerados pelo lexer e consumidos pelo parser.
+
+%token CLASS 258 ELSE 259 FI 260 IF 261 IN 262 
+%token INHERITS 263 LET 264 LOOP 265 POOL 266 THEN 267 WHILE 268
+%token CASE 269 ESAC 270 OF 271 DARROW 272 NEW 273 ISVOID 274
+%token <symbol>  STR_CONST 275 INT_CONST 276 
+%token <boolean> BOOL_CONST 277
+%token <symbol>  TYPEID 278 OBJECTID 279 
+%token ASSIGN 280 NOT 281 LE 282 ERROR 283
+
+## Types - Da bind nos nao terminais a tipos
+
+%type <program> program
+%type <classes> class_list
+%type <class_> class
+%type <features> dummy_feature_list  //lista ficticia de caracteristicas
+%type <feature> feature // representacao de uma unica caracteristica
+%type <formals> parameter_list // lista de caracteristica
+%type <formal> formal // representao um unico paramentro
+%type <cases> case_list //uma listade  branch
+%type <case_> case // uma unica branch
+%type <expressions> expression_list1 //espressao separadas por virgula
+%type <expressions> expression_list2 //expressao separada por ponto e virgula
+%type <expression> expression //expressao
+%type <expression> let //declaracao
+%type <expression> optional_assign //declaracao
+%type <error_msg> error_token
+
+## Precedence Operations - Precedencia de operacoes
+
+%nonassoc '<' '=' '>' LE 
+%left '+' '-' 
+%left '*' '/'  
+%right '~'  
+%right '!' 
+%left '.'
+%right FLAG
+%right ASSIGN
+%right NOT
+%left ISVOID
+
+## Gramática
+Aqui, as regras da gramática são definidas. Cada regra corresponde a um tipo de nó que pode ser criado na AST.
+
+program: Representa o nó raiz da ASA. 
+
+class_list: Mantém uma lista de todas as classes definidas no programa. 
+
+class: Representa uma classe. 
+
+dummy_feature_list: Uma lista vazia ou preenchida com métodos ou atributos da classe.
+
+parameter_list: Lista de argumentos para um método. Pode estar vazia ou conter um ou mais argumentos.
+
+feature: Métodos e atributos da classe.
+
+formal: Representa um argumento formal em um método, que consiste em um nome e um tipo.
+
+optional_assign: Atribuição opcional para um atributo. Um atributo pode ou não ter um valor inicial.
+
+expression_list1: Lista de expressões separadas por vírgulas. 
+
+expression_list2: Lista de expressões separadas por ponto e vírgula. 
+
+expression: Representa as expressões presentes no código fonte.
+
+
+## Regras Especiais
+error_token: Usado para lidar com erros de sintaxe.
+
+optional_assign: Trata a inicialização opcional de variáveis.
+
+let: Trata a declaração de variáveis locais
+
+
+## Compilação 
+
+make clean
+make parser 
+make 
+./lexer good.cl | ./parser 
+
+## Tests - Testes realizados em good.cl e bad.cl:
+
+good.cl - Retornou a AST sem problemas
+
+bad.cl - Para cada situacao de erro, o parser identificou e retornou a linha do erro
+		 A cada erro identificado, a linha foi comentada e o parser for executado nova-
+		 mente, ate que nenhum erro foi encontrado e a AST foi retornada.
