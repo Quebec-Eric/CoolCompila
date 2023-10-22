@@ -91,6 +91,7 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 %type <expressions> expression_list2 //expressao separada por ponto e virgula
 %type <expression> expression //expressao
 %type <expression> let //declaracao
+%type <expression> optional_assign //opicional
 %type <error_msg> error_token
 
 
@@ -101,53 +102,11 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 %right '~'  
 %right '!' 
 %left '.'
+%left '@'
 %right FLAG
 %right ASSIGN
 %right NOT
 %left ISVOID
-
-/*
-    Oq colocar no expression
-
-    OBJECTID ASSIGN expression
-
-    expression '.' OBJECTID '('   expression_list1  ')'  
-
-    OBJECTID '(' expression_list1  ')'  ==vai ter que tem um self
-
-    IF expression THEN expression ELSE expression FI == cund cond 
-        
-    WHILE expression LOOP expression POOL  == loop
-
-    LET let 
-
-    CASE expression OF case_list ESAC
-
-    '{' expression_list2 '}' 
-
-
-    NEW TYPEID
-
-    ISVOID  expression
-
-    expression " linha das operacoes'  expression
-
-    '~' '!'   expression
-    NOT expression
-
-      '(' expression ')'  
-
-    OBJECTID
-
-    INT_CONST
-
-    BOOL_CONST
-
-    STR_CONST   
-
-
-
-   */
 
 %%
 /* 
@@ -283,7 +242,107 @@ error_token                            : ';'
                                           }
                                       ;
 
+// expressions que faltavam (deve ta faltando alguma coisa, são muitas)
+expression                          	: OBJECTID ASSIGN expression {
+                                            $$ = assign($1, $3);
+                                        }
 
+                                        | expression '.' OBJECTID '(' expression_list1 ')' {
+                                          $$ = dispatch($1, $3, $5);
+                                        }
+                                        
+                                        | expression '@' TYPEID '.' OBJECTID '(' expression_list1 ')' {
+                                          $$ = static_dispatch($1, $3, $5, $7);
+                                        }
+
+                                        | '(' expression ')' {
+                                          $$ = $2;
+                                        }
+
+                                        | WHILE expression LOOP expression POOL {
+                                          $$ = loop($2, $4);
+                                        }
+
+                                        | IF expression THEN expression ELSE expression FI {
+                                          $$ = cond($2, $4, $6);
+                                        }
+
+                                        | '{' expression_list2 '}' {
+                                          $$ = block($2);
+                                        }
+
+                                        | CASE expression OF case_list ESAC {
+                                          $$ = typcase($2, $4);
+                                        }
+
+                                        | NEW TYPEID {
+                                          $$ = new_($2);
+                                        }
+
+                                        | ISVOID expression {
+                                          $$ = isvoid($2);
+                                        }
+
+                                        | LET let {
+                                          $$ = $2;
+                                        }
+
+                                        | OBJECTID {
+                                          $$ = object($1);
+                                        }
+
+                                        | OBJECTID '(' expression_list1 ')' {
+                                          $$ = dispatch(object(idtable.add_string("self")), $1, $3);
+                                        }
+
+                                        | INT_CONST {
+                                          $$ = int_const($1);
+                                        }
+
+                                        | STR_CONST {
+                                          $$ = string_const($1);
+                                        }
+
+                                        | BOOL_CONST {
+                                          $$ = bool_const($1);
+                                        }
+
+                                        | expression '=' expression {
+                                          $$ = eq($1, $3);
+                                        }
+
+                                        | expression '+' expression {
+                                          $$ = plus($1, $3);
+                                        }
+
+                                        | expression '-' expression {
+                                          $$ = sub($1, $3);
+                                        }
+
+                                        | expression '*' expression {
+                                          $$ = mul($1, $3);
+                                        }
+
+                                        | expression '/' expression {
+                                          $$ = divide($1, $3);
+                                        }
+
+                                        | '~' expression {
+                                          $$ = neg($2);
+                                        }
+
+                                        | expression '<' expression {
+                                          $$ = lt($1, $3);
+                                        }
+
+                                        | expression LE expression {
+                                          $$ = leq($1, $3);
+                                        }
+
+                                        | NOT expression {
+                                          $$ = comp($2);
+                                        }
+                                        ;
 
 
 //tratando o let
@@ -314,9 +373,15 @@ case		                              : OBJECTID ':' TYPEID DARROW expression ';'
                                         {
 					                                $$ = branch($1, $3, $5);
 				                                }
+
+
+optional_assign                       : {
+					                                    $$ = no_expr();
+				                                }
+				                                | ASSIGN expression {
+					                              $$ = $2;
+				                                }
                                         ;
-
-
 
 
 
