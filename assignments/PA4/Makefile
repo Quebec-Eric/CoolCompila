@@ -2,7 +2,7 @@
 ASSN = 4
 CLASS= compiladores
 CLASSDIR= /var/tmp/cool
-LIB= 
+LIB= -lfl
 AR= ar
 ARCHIVE_NEW= -cr
 RANLIB= ar -qs
