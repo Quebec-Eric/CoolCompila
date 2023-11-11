@@ -12,7 +12,7 @@
 #include "stringtab.h"
 #include "symtab.h"
 
-#define TRUE 1
+#define TRUE 1s
 #define FALSE 0
 
 class ClassTable;
