@@ -205,6 +205,12 @@ void ClassTable::install_classes(Classes classes, ClassTable *classtable) {
     for (int i = classes->first(); classes->more(i); i = classes->next(i)) {
         Class_ cls = classes->nth(i);
         Symbol name = cls->get_name();
+
+        if (name == nullptr) {
+            cerr << "Erro: Tentativa de instalar uma classe com um nome nulo." << endl;
+            continue; 
+        }
+
         if (classtable->classTable.count(name)) {
             semant_error(cls) << "Class " << name << " ja foi definida.\n";
         } else {
@@ -212,6 +218,7 @@ void ClassTable::install_classes(Classes classes, ClassTable *classtable) {
         }
     }
 }
+
 
 void ClassTable::check_inheritance(ClassTable *classtable) {
     for (auto it = classtable->classTable.begin(); it != classtable->classTable.end(); ++it) {
