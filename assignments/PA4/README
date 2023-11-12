@@ -178,5 +178,48 @@ Instructions
 
 ---8<------8<------8<------8<---cut here---8<------8<------8<------8<---
 
-Write-up for PA4
-----------------
+Este documento descreve a implementação da análise semântica para a linguagem de programação Cool
+
+GRUPO:
+	Bruno Pena Baêta
+	Diogo Fascinani
+	Eric Azevedo
+	July Werneck
+
+COMPONENTES DO CÓDIGO:
+
+1. Arquivo de Cabeçalho semant.h
+	Conteúdo: Define a estrutura da classe ClassTable, ambientes de objetos, tabelas de métodos, e funções de erro semântico
+	Inclusões:
+		Bibliotecas padrão como iostream, map, vector
+		Arquivos cool-tree.h, list.h, stringtab.h, symtab.h para estruturas específicas de Cool
+
+2. Símbolos Predefinidos e Inicialização de Constantes
+	Descrição: Define símbolos essenciais e os inicializa para preparar a análise semântica
+	Função: Define uma variedade de símbolos essenciais para a análise semântica
+	Implementação: Utiliza uma série de variáveis estáticas do tipo Symbol para armazenar símbolos como Int, String, Object, entre outros
+	
+3. Inicialização de Constantes
+	Função: Inicializa os símbolos predefinidos
+	Implementação: A função initialize_constants() é responsável por adicionar strings correspondentes aos símbolos na tabela de símbolos
+	
+4. Classe ClassTable
+	Objetivo: Centralizar informações sobre as classes em Cool e realizar verificações semânticas
+	Subcomponentes:
+		Métodos como install_basic_classes, install_classes, check_inheritance, check_main, LCA, install_methods, check_methods
+		Atributos como objectEnv e methodTable para gerenciamento de ambiente de objetos e métodos
+
+5. Gestão de Erros Semânticos
+	Descrição: Implementa funções semant_error para relatar erros semânticos encontrados durante a análise
+
+6. Função Principal semant
+	Descrição: Coordena o processo de análise semântica, incluindo inicialização, verificação de classes e métodos, e outras regras semânticas
+
+7. Arquivo cool-tree.h
+	Modificações: Em cada typedef de tipos de métodos, foi adicionado o método checkType().
+	Exemplo:
+		class Expression_class : public tree_node {
+			...
+			void checkType() {}
+			...
+		};
