@@ -2,7 +2,13 @@
 #include <stdio.h>
 #include "emit.h"
 #include "cool-tree.h"
+#include "cgen_class_definition.h"
 #include "symtab.h"
+#include <queue>
+#include <map>
+#include <vector>
+#include <set>
+#include <algorithm>
 
 enum Basicness     {Basic, NotBasic};
 #define TRUE 1
@@ -21,6 +27,27 @@ private:
    int stringclasstag;
    int intclasstag;
    int boolclasstag;
+   int ioclasstag;
+   int objectclasstag;
+   int currentclasstag;
+   int objectparenttag;
+   std::map<Symbol, int> classtag_of;
+   std::map<Symbol, Class_> class_definitions;
+
+   std::map<Symbol, std::vector<Symbol>>              class_attributes;
+   std::map<Symbol, std::set<Symbol>>                 class_directly_owned_attributes;
+   std::map<Symbol, std::map<Symbol, attr_class*>>    class_attribute_defs;
+   std::map<Symbol, std::vector<Symbol>>              class_methods;
+   std::map<Symbol, std::map<Symbol, method_class*>>  class_method_defs;
+   std::map<Symbol, std::map<Symbol, Symbol>>         class_method_defined_in;
+
+   std::vector<Symbol>                                inheritance_tree_traversal;
+   std::map<Symbol, Symbol>                           inheritance_parent;
+
+   std::map<Symbol, cgen_class_definition>            cgen_class_definition_of;
+   std::vector<Symbol>                                cgen_class_names;
+
+   std::map<Symbol, std::map<Symbol, int>>            dispatch_offsets_of_class_methods;
 
 
 // The following methods emit code for
@@ -41,8 +68,35 @@ private:
    void install_class(CgenNodeP nd);
    void install_classes(Classes cs);
    void build_inheritance_tree();
+
+   void transverse_inheritance_tree();
+   void construct_protObjs();
+
    void set_relations(CgenNodeP nd);
+
+   void attach_inherited_definitions_to(Class_ , Class_);
+   void register_properties_and_definitions_of(Class_);
+
+   cgen_class_definition construct_cgen_class_definition(Class_);
+
+   void emit_nameTab();
+   void emit_objTab();
+   void emit_parentTab();
+   void emit_dispatchTables();
+   void emit_dispatch_table(cgen_class_definition);
+   void emit_protObjs();
+   void emit_protObj_from(cgen_class_definition);
+   void emit_default_values_for_attr(Symbol);
+
+   void emit_initialiser(cgen_class_definition);
+   void emit_initialisers();
+   void emit_method(cgen_class_definition, method_class*);
+   void emit_methods(cgen_class_definition);
+   void emit_class_methods();
+
 public:
+   int next_classtag();
+   int get_classtag_for(Symbol );
    CgenClassTable(Classes, ostream& str);
    void code();
    CgenNodeP root();
@@ -55,7 +109,7 @@ private:
    List<CgenNode> *children;                  // Children of class
    Basicness basic_status;                    // `Basic' if class is basic
                                               // `NotBasic' otherwise
-
+   Class_ c;
 public:
    CgenNode(Class_ c,
             Basicness bstatus,
@@ -66,6 +120,7 @@ public:
    void set_parentnd(CgenNodeP p);
    CgenNodeP get_parentnd() { return parentnd; }
    int basic() { return (basic_status == Basic); }
+   Class_ get_class_definition() { return c; }
 };
 
 class BoolConst 

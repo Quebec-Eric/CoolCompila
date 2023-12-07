@@ -161,3 +161,16 @@ Instructions
 Write-up for PA5
 ----------------
 
+Grupo: Bruno Pena, Diogo Fasciani, Eric Azevedo, July Werneck
+
+No trabalho realizamos a geração de código para a linguagem COOL. 
+Começamos caminhando pela árvore de herança e através dela escaneando as classes, 
+seus atributos e métodos, e montando estruturas de dados para sintetizar seu conteúdo. 
+Utilizamos essas estruturas para construir o protótipo das classes customizadas e 
+para gerar a tabela de nomes e de objetos para o código em assembly e gerar todo 
+o código referente às tabelas de despacho nome e herança e protótipo de objetos.
+
+Foram criados casos de teste no arquivo example.cl considerando os diferentes elementos
+e regras da linguagem COOL. Dessa forma, foram testadas, a criação de classes, 
+inicialização e atribuição de atributos, definição de métodos, diferentes despaches, 
+utilização de let, operações aritméticas, condicionais, loops, entre outros.
