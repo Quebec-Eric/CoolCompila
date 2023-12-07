@@ -160,9 +160,6 @@ Instructions
 
 Write-up for PA5
 ----------------
-
-Grupo: Bruno Pena, Diogo Fasciani, Eric Azevedo, July Werneck
-
 No trabalho realizamos a geração de código para a linguagem COOL. 
 Começamos caminhando pela árvore de herança e através dela escaneando as classes, 
 seus atributos e métodos, e montando estruturas de dados para sintetizar seu conteúdo. 
